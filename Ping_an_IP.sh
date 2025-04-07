@@ -1,11 +1,29 @@
 #!/bin/bash
 
-# This script is used to ping a targeted IP address and check if it is reachable.
-# It will ping any address that is passed as an argument.
+# This script pings a target IP address to check if it's reachable.
+# Usage: ./ping_check.sh <IP_or_Hostname>
 
-script_name=${0}"
-target=${1}
+# Check for required argument
+if [ -z "$1" ]; then
+    echo "Usage: $0 <IP_or_Hostname>"
+    exit 1
+fi
 
-echo "Running ${script_name}..."
-echo "Pinging: ${target}"
-ping "${target}"
+target="$1"
+script_name=$(basename "$0")
+
+# Check if ping command is available
+if ! command -v ping >/dev/null 2>&1; then
+    echo "Error: 'ping' command not found on this system."
+    exit 2
+fi
+
+echo "[$script_name] Pinging: $target"
+ping -c 4 "$target"
+
+# Exit code check
+if [ $? -eq 0 ]; then
+    echo "[$script_name] Success: $target is reachable."
+else
+    echo "[$script_name] Failure: $target is not reachable."
+fi
